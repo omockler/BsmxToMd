@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BsmxToMd", "src\BsmxToMd.csproj", "{4352F3AF-DB46-419B-A953-0B2158DF8FBC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4352F3AF-DB46-419B-A953-0B2158DF8FBC}.Debug|x86.ActiveCfg = Debug|x86
+		{4352F3AF-DB46-419B-A953-0B2158DF8FBC}.Debug|x86.Build.0 = Debug|x86
+		{4352F3AF-DB46-419B-A953-0B2158DF8FBC}.Release|x86.ActiveCfg = Release|x86
+		{4352F3AF-DB46-419B-A953-0B2158DF8FBC}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = src\BsmxToMd.csproj
+	EndGlobalSection
+EndGlobal
