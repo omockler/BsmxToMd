@@ -46,9 +46,10 @@ namespace BsmxToMd
 				}
 			}
 			//recipes.ForEach (item => Console.WriteLine(item.ToMarkdown()));
+			Directory.CreateDirectory ("output");
 			foreach (var item in recipes) 
 			{
-				using (StreamWriter outfile = new StreamWriter(item.Name.Substring(0, 3) + ".md"))
+				using (StreamWriter outfile = new StreamWriter("output/" + item.Name.Substring(0, 3) + ".md"))
 				{
 					outfile.Write(item.ToMarkdown());
 				}
