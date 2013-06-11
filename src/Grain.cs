@@ -15,7 +15,7 @@ namespace BsmxToMd
 
 		public string ToMarkdown()
 		{
-			return string.Format ("| {0} | {1} |", Name, Amount.Substring(0, 4));
+			return string.Format ("| {0} | {1} ", Name, Amount.Substring(0, 4));
 		}
 	}
 }

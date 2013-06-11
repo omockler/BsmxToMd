@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using Gma.QrCodeNet.Encoding;
+using Gma.QrCodeNet.Encoding.Windows.Render;
 
 namespace BsmxToMd
 {
@@ -12,6 +14,9 @@ namespace BsmxToMd
 		{
 			FileInfo file = new FileInfo ("../../../../../Documents/BeerSmith2/Recipe.bsmx");
 			var bsFile = file.OpenText ().ReadToEnd ();
+
+			//Escape all * and ' chars since they have a special meaning in MD
+			bsFile = bsFile.Replace ("*", "\\*").Replace("'", "\\'");
 			var recipeStrings = bsFile.Split (new string[] {"<Recipe>"}, StringSplitOptions.None);
 
 			var recipes = new List<Recipe> (); 
@@ -22,7 +27,7 @@ namespace BsmxToMd
 					var parts = Regex.Split (r, "<\\/[^<]+?>");
 					//Match the name of the recipe
 					recipe.Name = parts.FirstOrDefault (s => s.Contains ("F_R_NAME")).Split ('>') [1];
-
+					recipe.BrewedOn = Regex.Match (r, "(?<=<F_R_DATE>)(?<=^|>)[^><]+?(?=<|$)").Value;
 					//Get all the grains
 					var grainStrings = Regex.Split (r, "<Grain>").Skip (1).ToList ();
 					grainStrings.ForEach (item => recipe.Grains.Add(new Grain(item)));
@@ -32,7 +37,7 @@ namespace BsmxToMd
 					hopStrings.ForEach (item => recipe.Hops.Add(new Hop(item)));
 
 					//Right now I am only going to care about one yeast but this should be updated in the future
-					var yeastString = Regex.Split (r, "<Hops>").Skip (1).FirstOrDefault();
+					var yeastString = Regex.Split (r, "<Yeast>").Skip (1).FirstOrDefault();
 					if (!string.IsNullOrEmpty (yeastString)) 
 					{
 						recipe.Yeast = Regex.Match (yeastString, "(?<=<F_Y_LAB>)(?<=^|>)[^><]+?(?=<|$)").Value;
@@ -45,13 +50,25 @@ namespace BsmxToMd
 					recipes.Add (recipe);
 				}
 			}
-			//recipes.ForEach (item => Console.WriteLine(item.ToMarkdown()));
-			Directory.CreateDirectory ("output");
+
+			var encoder = new QrEncoder();
+			var renderer = new WriteableBitmapRenderer (new FixedCodeSize (200, QuietZoneModules.Two));
+			Directory.CreateDirectory ("markdown");
+			Directory.CreateDirectory ("qrs");
+
 			foreach (var item in recipes) 
 			{
-				using (StreamWriter outfile = new StreamWriter("output/" + item.Name.Substring(0, 3) + ".md"))
+				var fileName = item.BrewedOn + "-" + item.Slug;
+				var urlBase = "http://mouseandlionale.com/beers/";
+				using (StreamWriter outfile = new StreamWriter("markdown/" + fileName + ".md"))
 				{
 					outfile.Write(item.ToMarkdown());
+				}
+
+				using (var fs = new FileStream ("qrs" + fileName + ".png", FileMode.Create)) 
+				{
+					var qr = encoder.Encode (urlBase + fileName + "/");
+					renderer.WriteToStream (qr.Matrix, ImageFormatEnum.PNG, fs);
 				}
 			}
 		}
