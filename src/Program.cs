@@ -51,24 +51,33 @@ namespace BsmxToMd
 				}
 			}
 
-			var encoder = new QrEncoder();
-			var renderer = new WriteableBitmapRenderer (new FixedCodeSize (200, QuietZoneModules.Two));
+			//var encoder = new QrEncoder();
+			//var renderer = new WriteableBitmapRenderer (new FixedCodeSize (200, QuietZoneModules.Two));
 			Directory.CreateDirectory ("markdown");
 			Directory.CreateDirectory ("qrs");
-
+			var qrList = new List<string> ();
 			foreach (var item in recipes) 
 			{
 				var fileName = item.BrewedOn + "-" + item.Slug;
-				var urlBase = "http://mouseandlionale.com/beers/";
+				qrList.Add (item.Slug);
+				//var urlBase = "http://mouseandlionale.com/beers/";
 				using (StreamWriter outfile = new StreamWriter("markdown/" + fileName + ".md"))
 				{
 					outfile.Write(item.ToMarkdown());
 				}
 
-				using (var fs = new FileStream ("qrs" + fileName + ".png", FileMode.Create)) 
+				//using (var fs = new FileStream ("qrs" + fileName + ".png", FileMode.Create)) 
+				//{
+				//	var qr = encoder.Encode (urlBase + fileName + "/");
+				//	renderer.WriteToStream (qr.Matrix, ImageFormatEnum.PNG, fs);
+				//}
+			}
+
+			using (var outfile = new StreamWriter("qrs/qrList.txt")) 
+			{
+				foreach (var name in qrList) 
 				{
-					var qr = encoder.Encode (urlBase + fileName + "/");
-					renderer.WriteToStream (qr.Matrix, ImageFormatEnum.PNG, fs);
+					outfile.WriteLine (name);
 				}
 			}
 		}
